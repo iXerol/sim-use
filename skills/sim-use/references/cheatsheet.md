@@ -76,6 +76,8 @@ Note: some Android apps render long-press menus in a `PopupWindow` overlay that 
 
 **Naming gotcha:** `scroll-up` scrolls the *content* up (like swiping up), which shows content *below* — it's "page down" in reading order.
 
+**Orientation gotcha:** single-finger presets (`scroll-*`, `swipe-from-*-edge`) name visual directions and follow the screen when it rotates. Pinch and rotate presets are computed in device-native portrait space and are **not** transformed — see below.
+
 ## Pinch and rotate (two-finger gestures)
 
 ```bash
@@ -91,7 +93,7 @@ sim-use gesture pinch-out --center-x 200 --center-y 400  # off-center pivot
 |---|---|---|
 | `--scale` | 2.0 (out) / 0.5 (in) | End radius / start radius ratio |
 | `--angle` | 90 | Rotation sweep in degrees |
-| `--center-x/y` | screen center | Pivot point (pixels) |
+| `--center-x/y` | screen center | Pivot point (pixels, device-native portrait space — not rotated with the UI) |
 | `--radius` | 80 | Start radius (pixels) |
 | `--steps` | 10 | Interpolated HID Move events (iOS only) |
 | `--step-ms` | derived from duration/steps | Sleep between Move events (iOS only) |

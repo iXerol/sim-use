@@ -31,7 +31,7 @@ sim-use ui --device <UDID>
 
 Read the outline. Each element has an `@N` alias and optionally a `#<id>` identifier. List cells carry `#N` (dominant list) or `#N@M` (scoped).
 
-Frames in the JSON output (`--json`: `entries[].frame`, `screen`) are in platform-native units — iOS **points**, Android **pixels**. Key off the envelope's `platform` field before doing math on coordinates across platforms. Always pair `--json` with `--no-raw` — see *Keeping output small* below.
+Frames — the outline and `--json` (`entries[].frame`, `screen`) alike — are in platform-native units (iOS **points**, Android **pixels**) and in **visual space**: they follow the screen as it rotates. Key off the envelope's `platform` field before doing coordinate math across platforms, and read *Coordinate spaces* under **Act** before feeding an outline number back to a raw-coordinate verb. Always pair `--json` with `--no-raw` — see *Keeping output small* below.
 
 ### Act
 
@@ -44,9 +44,22 @@ Pick a selector, in order of preference:
 | `tap --label 'X'` | Scripted flows. Combine with `--wait-timeout` for transitions. |
 | `tap --label-regex '...'` | Dynamic labels with counters/timestamps. Anchor with `^...$`. |
 | `tap --label-contains 'X'` | Substring match when exact label is unknown. |
-| `tap -x N -y N` / `tap --point x,y` | Last resort for elements with no AX data. Device-native portrait space by default; add `--coordinate-space ui` when the numbers come from the outline and the device may be rotated. |
+| `tap -x N -y N` / `tap --point x,y` | Last resort for elements with no AX data. See *Coordinate spaces* below for which space the numbers are in. |
 
 Disambiguate collisions with `--element-type` or `--frame minY=0.7r` (see `references/cheatsheet.md`).
+
+**Coordinate spaces.** The outline prints **visual space** — what you see, rotated with the screen. HID dispatch happens in **device-native portrait** space. Whatever sim-use resolves for you crosses that boundary automatically; whatever you type does not, unless you say so:
+
+| Form | Space you supply | On a rotated device |
+|---|---|---|
+| aliases and selectors — `@N`, `#N`, `#<id>`, `--id` / `--label` / `--value` / `--label-contains` / `--label-regex` | none — taken from the last `ui` snapshot or the live AX tree | calibrated for you |
+| `tap -x/-y` / `--point`, `touch`, `swipe` | device-native portrait by default; `--coordinate-space ui` to pass outline coordinates | opt-in, per command |
+| `gesture scroll-*` / `swipe-from-*-edge` | none — these name visual directions | auto-detected; `scroll-up` always scrolls what you see |
+| `gesture pinch-*` / `rotate-*` | `--center-x` / `--center-y` in device-native portrait | **not** transformed |
+
+Two limits on the opt-in: `touch` accepts it in the atomic `--down --up` form only, and on `tap` it applies to explicit coordinates only — aliases and selectors already resolve in ui space and reject it.
+
+On Android every coordinate is display space, which already rotates with the UI — `--coordinate-space` is accepted there and ignored.
 
 ### Verify
 
