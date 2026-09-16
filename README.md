@@ -69,7 +69,8 @@ Multiple selector styles for different needs:
 
 AX-derived selectors work in any orientation — sim-use self-calibrates the
 current rotation on each command (iOS). Explicit `-x/-y`/`--point` is
-interpreted in the device-native portrait space.
+interpreted in the device-native portrait space; pass `--coordinate-space ui`
+to give it in the visual space `ui` prints instead.
 
 
 ## Why sim-use
@@ -196,7 +197,7 @@ sim-use gesture scroll-down --pre-delay 0.5 --post-delay 1.0 --device $UDID
 
 `--pre-delay` / `--post-delay` / `--duration` work on `tap`, `swipe`, and `gesture` alike for coarse timing control.
 
-Single-finger presets (`scroll-*`, `swipe-from-*-edge`) name **visual** directions and are orientation-aware on iOS: their canvas size and rotation are auto-detected per command, so `scroll-up` scrolls the on-screen content up whether the device is portrait, landscape, or upside-down. Explicit `swipe`/`touch` coordinates remain device-native portrait space by default; pass `--coordinate-space ui` to give them in the visual space `ui` prints instead (orientation-calibrated per command; `touch` supports this in the atomic `--down --up` form only). Pinch/rotate presets remain untransformed. On Android the flag is accepted and ignored — display coordinates already rotate with the UI.
+Single-finger presets (`scroll-*`, `swipe-from-*-edge`) name **visual** directions and are orientation-aware on iOS: their canvas size and rotation are auto-detected per command, so `scroll-up` scrolls the on-screen content up whether the device is portrait, landscape, or upside-down. Explicit `tap`/`swipe`/`touch` coordinates remain device-native portrait space by default; pass `--coordinate-space ui` to give them in the visual space `ui` prints instead (orientation-calibrated per command; `touch` supports this in the atomic `--down --up` form only, and `tap` on explicit coordinates only — its aliases and selectors are already resolved in ui space). Pinch/rotate presets remain untransformed. On Android the flag is accepted and ignored — display coordinates already rotate with the UI.
 
 ### Text input
 
